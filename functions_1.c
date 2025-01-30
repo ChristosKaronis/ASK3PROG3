@@ -1,9 +1,13 @@
 #include "e_shop.h"
 
+//We initialise the shop with 20 items
 void initialize_shop(Shop *shop) {
+    //Our items names
     const char *base_names[5] = {"Laptop", "Mouse", "Keyboard", "Monitor", "Headphones"};
+    //to make 5 of each
     int name_counter[5] = {0, 0, 0, 0, 0};  
 
+//We put our items to the shop with their name and starting values
     for (int i = 0; i < 20; i++) {
         int name_index = i % 5;
         name_counter[name_index]++;
@@ -20,21 +24,27 @@ void initialize_shop(Shop *shop) {
     shop->declined_orders = 0;
 }
 
+//When we have to process the info given by orders
 int process_order(Shop *shop, Order *order) {
 
+//If quantity is problematic
     if (order->quantity <= 0) {
     printf("Invalid order: %s x%d. Quantity must be greater than 0.\n",
            order->item_name, order->quantity);
     return -1;
 }
 
+//Trying to match with one of the shop items
     for (int i = 0; i < 20; i++) {
         printf("Checking item: %s (Stock: %d) against order: %s requested quantity: %d\n",
                shop->items[i].description, shop->items[i].quantity,
                order->item_name, order->quantity);
 
+//If we find the matching one we give it below
         if (strcmp(shop->items[i].description, order->item_name) == 0) {
             shop->items[i].total_orders++;
+
+//Check if we have enough of the item to complete the order
             if (shop->items[i].quantity >= order->quantity) {
                 shop->items[i].quantity -= order->quantity;
                 shop->items[i].quantity_sold += order->quantity;
@@ -50,6 +60,8 @@ int process_order(Shop *shop, Order *order) {
             }
         }
     }
+
+//If item doeesnt match we decline the order
     shop->declined_orders++;
     printf("Order declined: Item not found.\n");
     return -1;
