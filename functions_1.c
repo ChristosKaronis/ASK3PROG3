@@ -21,6 +21,13 @@ void initialize_shop(Shop *shop) {
 }
 
 int process_order(Shop *shop, Order *order) {
+    
+    if (order->quantity <= 0) {
+    printf("Invalid order: %s x%d. Quantity must be greater than 0.\n",
+           order->item_name, order->quantity);
+    return -1;
+}
+
     for (int i = 0; i < 20; i++) {
         printf("Checking item: %s (Stock: %d) against order: %s x%d\n",
                shop->items[i].description, shop->items[i].quantity,
