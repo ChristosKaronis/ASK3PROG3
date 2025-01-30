@@ -21,7 +21,7 @@ void initialize_shop(Shop *shop) {
 }
 
 int process_order(Shop *shop, Order *order) {
-    
+
     if (order->quantity <= 0) {
     printf("Invalid order: %s x%d. Quantity must be greater than 0.\n",
            order->item_name, order->quantity);
@@ -29,7 +29,7 @@ int process_order(Shop *shop, Order *order) {
 }
 
     for (int i = 0; i < 20; i++) {
-        printf("Checking item: %s (Stock: %d) against order: %s x%d\n",
+        printf("Checking item: %s (Stock: %d) against order: %s requested quantity: %d\n",
                shop->items[i].description, shop->items[i].quantity,
                order->item_name, order->quantity);
 
@@ -71,10 +71,10 @@ void handle_client(int client_sock, Shop *shop) {
         char response[BUFFER_SIZE];
 
         if (price > 0) {
-            snprintf(response, BUFFER_SIZE, "Order Successful: %s x%d. Total: $%.2f\n",
+            snprintf(response, BUFFER_SIZE, "Order Successful: %s quantity: %d. Total: $%.2f\n",
                      order.item_name, order.quantity, (float)price);
         } else {
-            snprintf(response, BUFFER_SIZE, "Order Declined: %s x%d. Not enough stock.\n",
+            snprintf(response, BUFFER_SIZE, "Order Declined: %s quantity: %d. Not enough stock.\n",
                      order.item_name, order.quantity);
         }
 
