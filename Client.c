@@ -38,7 +38,7 @@ int main() {
         order.quantity = (rand() % 3) + 1;  // Orders between 1-3 items
 
         //In order to check the order being placed
-        printf("Placing Order: %s x%d\n", order.item_name, order.quantity);
+        printf("Placing Order: %s quantity requested %d\n", order.item_name, order.quantity);
 
         //Send the order to the server
         send(sock, &order, sizeof(Order), 0);

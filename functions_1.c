@@ -124,8 +124,8 @@ void send_shop_statistics(int client_sock, Shop *shop) {
         //Clear buffer for each item
         memset(buffer, 0, sizeof(buffer));  
         snprintf(buffer, sizeof(buffer),
-                 "%s: Total Orders = %d, Sold = %d, Unsuccessful Orders = %d\n",
-                 shop->items[i].description, shop->items[i].total_orders,
+                 "%s: Total Orders = %d, Price = $%.2f, Sold = %d, Unsuccessful Orders = %d\n",
+                 shop->items[i].description, shop->items[i].total_orders, shop->items[i].price,
                  shop->items[i].quantity_sold, shop->items[i].unsuccessful_orders);
 
         //Send item data to the client
