@@ -24,6 +24,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    signal(SIGCHLD, SIG_IGN);
     listen(server_sock, 5);
     printf("Server is running on port %d...\n", PORT);
 

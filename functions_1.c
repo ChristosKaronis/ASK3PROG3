@@ -45,10 +45,16 @@ void handle_client(int client_sock, Shop *shop) {
     Order order;
     
     for (int i = 0; i < 10; i++) {  // Each client makes 10 orders
-        recv(client_sock, &order, sizeof(Order), 0);
+        int bytes_received = recv(client_sock, &order, sizeof(Order), 0);
+        if (bytes_received <= 0) {
+            printf("Client disconnected or error occurred.\n");
+            close(client_sock);
+            return;
+        }
+
         int price = process_order(shop, &order);
         char response[BUFFER_SIZE];
-        
+
         if (price > 0) {
             snprintf(response, BUFFER_SIZE, "Order Successful: %s x%d. Total: $%.2f\n",
                      order.item_name, order.quantity, (float)price);
@@ -56,29 +62,34 @@ void handle_client(int client_sock, Shop *shop) {
             snprintf(response, BUFFER_SIZE, "Order Declined: %s x%d. Not enough stock.\n",
                      order.item_name, order.quantity);
         }
-        
+
         send(client_sock, response, strlen(response), 0);
         sleep(1);  // Simulating processing time
     }
 
+    // Send shop statistics to client
     send_shop_statistics(client_sock, shop);
+
+    // Close the client socket after communication is complete
     close(client_sock);
 }
 
+
 void send_shop_statistics(int client_sock, Shop *shop) {
     char buffer[BUFFER_SIZE];
-    int offset = 0;
+    memset(buffer, 0, sizeof(buffer));
 
-    offset += snprintf(buffer + offset, sizeof(buffer) - offset,
-                       "\nShop Statistics:\nTotal Earnings: $%.2f\nSuccessful Orders: %d\nDeclined Orders: %d\n\n",
-                       shop->total_earnings, shop->successful_orders, shop->declined_orders);
+    snprintf(buffer, sizeof(buffer),
+             "\nShop Statistics:\nTotal Earnings: $%.2f\nSuccessful Orders: %d\nDeclined Orders: %d\n\n",
+             shop->total_earnings, shop->successful_orders, shop->declined_orders);
+    send(client_sock, buffer, strlen(buffer), 0);
 
     for (int i = 0; i < 20; i++) {
-        offset += snprintf(buffer + offset, sizeof(buffer) - offset,
-                           "%s: Total Orders = %d, Sold = %d, Unsuccessful Orders = %d\n",
-                           shop->items[i].description, shop->items[i].total_orders,
-                           shop->items[i].quantity_sold, shop->items[i].unsuccessful_orders);
+        memset(buffer, 0, sizeof(buffer));  // Reset buffer
+        snprintf(buffer, sizeof(buffer),
+                 "%s: Total Orders = %d, Sold = %d, Unsuccessful Orders = %d\n",
+                 shop->items[i].description, shop->items[i].total_orders,
+                 shop->items[i].quantity_sold, shop->items[i].unsuccessful_orders);
+        send(client_sock, buffer, strlen(buffer), 0);
     }
-
-    send(client_sock, buffer, strlen(buffer), 0);
 }
