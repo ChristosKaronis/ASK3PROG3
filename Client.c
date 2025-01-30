@@ -35,7 +35,7 @@ int main() {
                  base_names[random_item_index % 5], (random_item_index / 5) + 1);
 
         //Quantity is always at least 1 
-        order.quantity = (rand() % 3) + 1;  // Orders between 1-3 items
+        order.quantity = (rand() % 2) + 1;  //Orders between 1-2 items
 
         //In order to check the order being placed
         printf("Placing Order: %s quantity requested %d\n", order.item_name, order.quantity);

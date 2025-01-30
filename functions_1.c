@@ -12,7 +12,7 @@ void initialize_shop(Shop *shop) {
         int name_index = i % 5;
         name_counter[name_index]++;
         sprintf(shop->items[i].description, "%s_%d", base_names[name_index], name_counter[name_index]);
-        shop->items[i].quantity = 10;
+        shop->items[i].quantity = 2;
         shop->items[i].price = ((rand() % 100) + 1) * 0.5;
         shop->items[i].total_orders = 0;
         shop->items[i].quantity_sold = 0;
