@@ -14,7 +14,7 @@
 #include <errno.h>
 
 #define PORT 8080
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 256
 
 
 typedef struct {

@@ -74,18 +74,18 @@ void handle_client(int client_sock, Shop *shop) {
     close(client_sock);
 }
 
-
 void send_shop_statistics(int client_sock, Shop *shop) {
-    char buffer[BUFFER_SIZE];
-    memset(buffer, 0, sizeof(buffer));
+    char buffer[BUFFER_SIZE];  // Increased buffer size
 
+    // Send shop summary
     snprintf(buffer, sizeof(buffer),
              "\nShop Statistics:\nTotal Earnings: $%.2f\nSuccessful Orders: %d\nDeclined Orders: %d\n\n",
              shop->total_earnings, shop->successful_orders, shop->declined_orders);
     send(client_sock, buffer, strlen(buffer), 0);
 
+    // Send each item separately to avoid truncation
     for (int i = 0; i < 20; i++) {
-        memset(buffer, 0, sizeof(buffer));  // Reset buffer
+        memset(buffer, 0, sizeof(buffer));  // Clear buffer for each item
         snprintf(buffer, sizeof(buffer),
                  "%s: Total Orders = %d, Sold = %d, Unsuccessful Orders = %d\n",
                  shop->items[i].description, shop->items[i].total_orders,
@@ -93,3 +93,4 @@ void send_shop_statistics(int client_sock, Shop *shop) {
         send(client_sock, buffer, strlen(buffer), 0);
     }
 }
+
