@@ -5,7 +5,7 @@ int main() {
     Shop eshop;
     initialize_shop(&eshop);
 
-// Here are the servers and clients sockets
+//Here are the servers and clients sockets
     int server_sock, client_sock;
     struct sockaddr_in server_addr, client_addr;
 
@@ -30,14 +30,14 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-//Ignore termination signals from child
+    //Ignore termination signals from child
     signal(SIGCHLD, SIG_IGN);
 
-//For clients to connect , we set it to accept 5 clients
+    //For clients to connect , we set it to accept 5 clients
     listen(server_sock, 5);
     printf("Server is running on port %d...\n", PORT);
 
-//Max 5 clients
+    //Max 5 clients
     for (int i = 0; i < 5; i++) {
         client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &client_len);
 
@@ -50,12 +50,12 @@ int main() {
         close(client_sock);
     }
 
-//Waiting for all childs to finish
+    //Waiting for all childs to finish
     for (int i = 0; i < 5; i++) {
         wait(NULL);
     }
 
-//Close our socket
+    //Close our socket
     close(server_sock);
     return 0;
 }

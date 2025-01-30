@@ -40,11 +40,11 @@ int process_order(Shop *shop, Order *order) {
                shop->items[i].description, shop->items[i].quantity,
                order->item_name, order->quantity);
 
-//If we find the matching one we give it below
+        //If we find the matching one we give it below
         if (strcmp(shop->items[i].description, order->item_name) == 0) {
             shop->items[i].total_orders++;
 
-//Check if we have enough of the item to complete the order
+            //Check if we have enough of the item to complete the order
             if (shop->items[i].quantity >= order->quantity) {
                 shop->items[i].quantity -= order->quantity;
                 shop->items[i].quantity_sold += order->quantity;
@@ -70,8 +70,11 @@ int process_order(Shop *shop, Order *order) {
 
 void handle_client(int client_sock, Shop *shop) {
     Order order;
-    
-    for (int i = 0; i < 10; i++) {  // Each client makes 10 orders
+
+//We have 10 orders for each client 
+    for (int i = 0; i < 10; i++) {  
+
+        //Receives order from client
         int bytes_received = recv(client_sock, &order, sizeof(Order), 0);
         if (bytes_received <= 0) {
             printf("Client disconnected or error occurred.\n");
@@ -79,44 +82,53 @@ void handle_client(int client_sock, Shop *shop) {
             return;
         }
 
+        //We get the total price here
         int price = process_order(shop, &order);
         char response[BUFFER_SIZE];
 
+        //If everything went smoothly we get a message with the price
         if (price > 0) {
             snprintf(response, BUFFER_SIZE, "Order Successful: %s quantity: %d. Total: $%.2f\n",
                      order.item_name, order.quantity, (float)price);
         } else {
+            //order declined
             snprintf(response, BUFFER_SIZE, "Order Declined: %s quantity: %d. Not enough stock.\n",
                      order.item_name, order.quantity);
         }
 
+        //Response to the client
         send(client_sock, response, strlen(response), 0);
-        sleep(1);  // Simulating processing time
+        //A little waiting time
+        sleep(1);  
     }
 
-    // Send shop statistics to client
+//Send shop statistics to client after all orders are finished
     send_shop_statistics(client_sock, shop);
 
-    // Close the client socket after communication is complete
+//Close the client socket 
     close(client_sock);
 }
 
+//Send shop statistics to client
 void send_shop_statistics(int client_sock, Shop *shop) {
-    char buffer[BUFFER_SIZE];  // Increased buffer size
+    char buffer[BUFFER_SIZE];  
 
-    // Send shop summary
+    //General stats from shop
     snprintf(buffer, sizeof(buffer),
              "\nShop Statistics:\nTotal Earnings: $%.2f\nSuccessful Orders: %d\nDeclined Orders: %d\n\n",
              shop->total_earnings, shop->successful_orders, shop->declined_orders);
     send(client_sock, buffer, strlen(buffer), 0);
 
-    // Send each item separately to avoid truncation
+    //Stats for each item seperetaly
     for (int i = 0; i < 20; i++) {
-        memset(buffer, 0, sizeof(buffer));  // Clear buffer for each item
+        //Clear buffer for each item
+        memset(buffer, 0, sizeof(buffer));  
         snprintf(buffer, sizeof(buffer),
                  "%s: Total Orders = %d, Sold = %d, Unsuccessful Orders = %d\n",
                  shop->items[i].description, shop->items[i].total_orders,
                  shop->items[i].quantity_sold, shop->items[i].unsuccessful_orders);
+
+        //Send item data to the client
         send(client_sock, buffer, strlen(buffer), 0);
     }
 }
