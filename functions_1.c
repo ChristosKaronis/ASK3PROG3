@@ -8,7 +8,7 @@ void initialize_shop(Shop *shop) {
         int name_index = i % 5;
         name_counter[name_index]++;
         sprintf(shop->items[i].description, "%s_%d", base_names[name_index], name_counter[name_index]);
-        shop->items[i].quantity = 2;
+        shop->items[i].quantity = 10;
         shop->items[i].price = ((rand() % 100) + 1) * 0.5;
         shop->items[i].total_orders = 0;
         shop->items[i].quantity_sold = 0;
@@ -22,6 +22,10 @@ void initialize_shop(Shop *shop) {
 
 int process_order(Shop *shop, Order *order) {
     for (int i = 0; i < 20; i++) {
+        printf("Checking item: %s (Stock: %d) against order: %s x%d\n",
+               shop->items[i].description, shop->items[i].quantity,
+               order->item_name, order->quantity);
+
         if (strcmp(shop->items[i].description, order->item_name) == 0) {
             shop->items[i].total_orders++;
             if (shop->items[i].quantity >= order->quantity) {
@@ -29,17 +33,21 @@ int process_order(Shop *shop, Order *order) {
                 shop->items[i].quantity_sold += order->quantity;
                 shop->total_earnings += shop->items[i].price * order->quantity;
                 shop->successful_orders++;
+                printf("Order successful!\n");
                 return shop->items[i].price * order->quantity;
             } else {
                 shop->items[i].unsuccessful_orders++;
                 shop->declined_orders++;
+                printf("Order declined: Not enough stock.\n");
                 return -1;
             }
         }
     }
     shop->declined_orders++;
+    printf("Order declined: Item not found.\n");
     return -1;
 }
+
 
 void handle_client(int client_sock, Shop *shop) {
     Order order;

@@ -14,9 +14,11 @@ int main() {
 
     for (int i = 0; i < 10; i++) {
         Order order;
+        const char *base_names[5] = {"Laptop", "Mouse", "Keyboard", "Monitor", "Headphones"};
         int random_item_index = rand() % 20;
-        snprintf(order.item_name, sizeof(order.item_name), "Item_%d", random_item_index);
-        order.quantity = 1;
+        snprintf(order.item_name, sizeof(order.item_name), "%s_%d", base_names[random_item_index % 5],
+        (random_item_index / 5) + 1);
+
         send(sock, &order, sizeof(Order), 0);
         char response[BUFFER_SIZE];
         recv(sock, response, sizeof(response), 0);
